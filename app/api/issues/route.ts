@@ -7,6 +7,8 @@ const createIssueSchema = z.object({
 	description: z.string().min(1),
 });
 
+export type IssueForm = z.infer<typeof createIssueSchema>;
+
 export const POST = async (request: NextRequest) => {
 	const body = await request.json();
 	const validation = createIssueSchema.safeParse(body);
