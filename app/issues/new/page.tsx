@@ -1,6 +1,7 @@
 'use client';
 import { IssueForm } from '@/app/api/issues/route';
 import ErrorMessage from '@/app/components/ErrorMessage';
+import Spinner from '@/app/components/Spinner';
 import { createIssueSchema } from '@/app/validationSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Callout, TextField } from '@radix-ui/themes';
@@ -14,6 +15,8 @@ import SimpleMDE from 'react-simplemde-editor';
 
 const NewIssuePage = () => {
 	const [error, setError] = useState('');
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
 	const {
 		register,
 		control,
@@ -24,13 +27,19 @@ const NewIssuePage = () => {
 	});
 
 	const router = useRouter();
-	const onSubmit: SubmitHandler<IssueForm> = async (data) => {
-		try {
-			await axios.post('/api/issues', data);
-			router.push('/issues');
-		} catch (error) {
-			setError('An unexpected error occurred.');
-		}
+	const onSubmit: SubmitHandler<IssueForm> = (data) => {
+		setIsSubmitting(true);
+		axios
+			.post('/api/issues', data)
+			.then(() => {
+				router.push('/issues');
+			})
+			.catch(() => {
+				setError('An unexpected error occurred.');
+			})
+			.finally(() => {
+				setIsSubmitting(false);
+			});
 	};
 
 	return (
@@ -44,7 +53,11 @@ const NewIssuePage = () => {
 				</Callout.Root>
 			)}
 			<form className='space-y-3' onSubmit={handleSubmit(onSubmit)}>
-				<TextField.Root placeholder='Title' {...register('title')} />
+				<TextField.Root
+					readOnly={isSubmitting}
+					placeholder='Title'
+					{...register('title')}
+				/>
 				<ErrorMessage>{errors.title?.message}</ErrorMessage>
 				<Controller
 					name='description'
@@ -54,7 +67,9 @@ const NewIssuePage = () => {
 					)}
 				/>
 				<ErrorMessage>{errors.description?.message}</ErrorMessage>
-				<Button>Submit New Issue</Button>
+				<Button disabled={isSubmitting}>
+					Submit New Issue {isSubmitting && <Spinner />}
+				</Button>
 			</form>
 		</div>
 	);
