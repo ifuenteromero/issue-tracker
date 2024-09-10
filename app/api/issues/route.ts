@@ -1,13 +1,7 @@
+import { createIssueSchema } from '@/app/validationSchemas';
 import prisma from '@/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-
-const createIssueSchema = z.object({
-	title: z.string().min(1, 'Title is required.').max(255),
-	description: z
-		.string({ message: 'Description is required.' })
-		.min(1, 'Description is required.'),
-});
 
 export type IssueForm = z.infer<typeof createIssueSchema>;
 
