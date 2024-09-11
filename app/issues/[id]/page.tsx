@@ -14,7 +14,7 @@ const IssueDetailPage = async ({ params }: { params: { id: string } }) => {
 
 	if (!issue) notFound();
 	return (
-		<Flex direction='column' gap='2' maxWidth='40rem'>
+		<Flex direction='column' gap='2' className='max-w-xl'>
 			<Heading>{issue.title}</Heading>
 			<Flex gap='2' align='center' wrap='wrap'>
 				<IssueStatusBadge status={issue.status} />
