@@ -1,4 +1,5 @@
 'use client';
+import endpoints from '@/app/api/endpoints';
 import { IssueFormData } from '@/app/api/issues/route';
 import { ErrorMessage, Spinner } from '@/app/components';
 import { createIssueSchema } from '@/app/validationSchemas';
@@ -31,20 +32,26 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
 	});
 
 	const router = useRouter();
-	const onSubmit: SubmitHandler<IssueFormData> = (data) => {
+	const onSubmit: SubmitHandler<IssueFormData> = async (data) => {
 		setIsSubmitting(true);
-		axios
-			.post('/api/issues', data)
-			.then(() => {
-				router.push('/issues');
-			})
-			.catch(() => {
-				setError('An unexpected error occurred.');
-			})
-			.finally(() => {
-				setIsSubmitting(false);
-			});
+		try {
+			if (issue) {
+				await axios.patch(
+					endpoints.issueDetail(issue.id.toString()),
+					data
+				);
+			} else {
+				await axios.post(endpoints.issues, data);
+			}
+			router.push('/issues');
+		} catch (error) {
+			setError('An unexpected error occurred.');
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
+
+	const buttonText = issue ? 'Update Issue' : 'Submit New Issue';
 
 	return (
 		<div className='max-w-xl'>
@@ -74,7 +81,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
 				/>
 				<ErrorMessage>{errors.description?.message}</ErrorMessage>
 				<Button disabled={isSubmitting}>
-					Submit New Issue {isSubmitting && <Spinner />}
+					{buttonText} {isSubmitting && <Spinner />}
 				</Button>
 			</form>
 		</div>
