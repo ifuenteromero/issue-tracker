@@ -2,6 +2,7 @@
 import endpoints from '@/app/api/endpoints';
 import { IssueFormData } from '@/app/api/issues/route';
 import { ErrorMessage, Spinner } from '@/app/components';
+import routes from '@/app/utils/routes';
 import { createIssueSchema } from '@/app/validationSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Issue } from '@prisma/client';
@@ -43,7 +44,8 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
 			} else {
 				await axios.post(endpoints.issues, data);
 			}
-			router.push('/issues');
+			router.push(routes.issues);
+			router.refresh();
 		} catch (error) {
 			setError('An unexpected error occurred.');
 		} finally {
