@@ -1,6 +1,7 @@
 'use client';
 
 import endpoints from '@/app/api/endpoints';
+import { Spinner } from '@/app/components';
 import routes from '@/app/utils/routes';
 import { AlertDialog, Button, Flex } from '@radix-ui/themes';
 import axios from 'axios';
@@ -10,14 +11,17 @@ import { useState } from 'react';
 const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
 	const router = useRouter();
 	const [error, setError] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	const deleteIssue = async () => {
 		try {
+			setIsDeleting(true);
 			await axios.delete(endpoints.issueDetail(issueId.toString()));
 			router.push(routes.issues);
 			router.refresh();
 		} catch (error) {
 			setError(true);
+			setIsDeleting(false);
 		}
 	};
 
@@ -25,7 +29,9 @@ const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
 		<>
 			<AlertDialog.Root>
 				<AlertDialog.Trigger>
-					<Button color='red'>Delete Issue</Button>
+					<Button disabled={isDeleting} color='red'>
+						Delete Issue {isDeleting && <Spinner />}
+					</Button>
 				</AlertDialog.Trigger>
 				<AlertDialog.Content>
 					<AlertDialog.Title>Confirm Deletion</AlertDialog.Title>
