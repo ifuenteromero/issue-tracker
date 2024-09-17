@@ -1,5 +1,5 @@
 import { createIssueSchema } from '@/app/validationSchemas';
-import prisma from '@/prisma/client';
+import { prisma } from '@/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
