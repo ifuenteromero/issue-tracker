@@ -1,6 +1,6 @@
 'use client';
 
-import { Box } from '@radix-ui/themes';
+import { Box, Container, Flex } from '@radix-ui/themes';
 import classNames from 'classnames';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -19,34 +19,43 @@ const NavBar = () => {
 	const { status } = useSession();
 
 	return (
-		<nav className='flex space-x-6 border-b mb-5 px-5 h-14 items-center'>
-			<Link href={routes.root}>
-				<AiFillBug />
-			</Link>
-			<ul className='flex space-x-6'>
-				{links.map(({ label, href }) => (
-					<li key={label}>
-						<Link
-							className={classNames({
-								'text-zinc-900': currentPathname === href,
-								'text-zinc-500': currentPathname !== href,
-								'hover:text-zinc-800 transition-colors': true,
-							})}
-							href={href}
-						>
-							{label}
+		<nav className='border-b mb-5 px-5 py-3'>
+			<Container>
+				<Flex justify='between'>
+					<Flex align='center' gap='3'>
+						<Link href={routes.root}>
+							<AiFillBug />
 						</Link>
-					</li>
-				))}
-			</ul>
-			<Box>
-				{status === 'unauthenticated' && (
-					<Link href={routes.login}>Sign in</Link>
-				)}
-				{status === 'authenticated' && (
-					<Link href={routes.logout}>Sign out</Link>
-				)}
-			</Box>
+						<ul className='flex space-x-6'>
+							{links.map(({ label, href }) => (
+								<li key={label}>
+									<Link
+										className={classNames({
+											'text-zinc-900':
+												currentPathname === href,
+											'text-zinc-500':
+												currentPathname !== href,
+											'hover:text-zinc-800 transition-colors':
+												true,
+										})}
+										href={href}
+									>
+										{label}
+									</Link>
+								</li>
+							))}
+						</ul>
+					</Flex>
+					<Box>
+						{status === 'unauthenticated' && (
+							<Link href={routes.login}>Sign in</Link>
+						)}
+						{status === 'authenticated' && (
+							<Link href={routes.logout}>Sign out</Link>
+						)}
+					</Box>
+				</Flex>
+			</Container>
 		</nav>
 	);
 };
