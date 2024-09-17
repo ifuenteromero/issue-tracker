@@ -1,6 +1,13 @@
 'use client';
 
-import { Box, Container, Flex } from '@radix-ui/themes';
+import {
+	Avatar,
+	Box,
+	Container,
+	DropdownMenu,
+	Flex,
+	Text,
+} from '@radix-ui/themes';
 import classNames from 'classnames';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -16,7 +23,7 @@ const NavBar = () => {
 
 	const currentPathname = usePathname();
 
-	const { status } = useSession();
+	const { status, data: session } = useSession();
 
 	return (
 		<nav className='border-b mb-5 px-5 py-3'>
@@ -51,7 +58,30 @@ const NavBar = () => {
 							<Link href={routes.login}>Sign in</Link>
 						)}
 						{status === 'authenticated' && (
-							<Link href={routes.logout}>Sign out</Link>
+							<DropdownMenu.Root>
+								<DropdownMenu.Trigger>
+									<Avatar
+										src={session.user!.image!}
+										fallback='?'
+										referrerPolicy='no-referrer'
+										size='2'
+										radius='full'
+										className='cursor-pointer'
+									/>
+								</DropdownMenu.Trigger>
+								<DropdownMenu.Content>
+									<DropdownMenu.Label>
+										<Text size='2'>
+											{session.user?.email}
+										</Text>
+									</DropdownMenu.Label>
+									<DropdownMenu.Item>
+										<Link href={routes.logout}>
+											Sign out
+										</Link>
+									</DropdownMenu.Item>
+								</DropdownMenu.Content>
+							</DropdownMenu.Root>
 						)}
 					</Box>
 				</Flex>
