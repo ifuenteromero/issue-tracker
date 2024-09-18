@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AiFillBug } from 'react-icons/ai';
-import routes from './utils/routes';
+import routes from '../utils/routes';
 
 const NavBar = () => {
 	const links = [
