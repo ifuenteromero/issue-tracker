@@ -1,11 +1,24 @@
-import { prisma } from '@/prisma/client';
-import { Select } from '@radix-ui/themes';
+'use client';
 
-const AssigneeSelect = async () => {
-	const users = await prisma.user.findMany();
+import endpoints from '@/app/api/endpoints';
+import { User } from '@prisma/client';
+import { Select } from '@radix-ui/themes';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+
+const AssigneeSelect = () => {
+	const [users, setUsers] = useState<User[]>([]);
+
+	useEffect(() => {
+		const fetchUsers = async () => {
+			const { data } = await axios.get<User[]>(endpoints.users);
+			setUsers(data);
+		};
+		fetchUsers();
+	}, []);
 
 	return (
-		<Select.Root>
+		<Select.Root onOpenChange={(value) => console.log({ value })}>
 			<Select.Trigger placeholder='Assign...' />
 			<Select.Content>
 				<Select.Group>
