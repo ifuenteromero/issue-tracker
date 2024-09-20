@@ -50,6 +50,20 @@ const updateIssueHandler: AuthenticatedHandler = async (
 			status: 400,
 		});
 	}
+	const { title, description, assignedUserId } = body;
+
+	if (assignedUserId) {
+		const user = await prisma.user.findUnique({
+			where: { id: assignedUserId },
+		});
+
+		if (!user) {
+			return NextResponse.json(
+				{ error: 'Invalid user' },
+				{ status: 404 }
+			);
+		}
+	}
 
 	const issue = await prisma.issue.findUnique({
 		where: { id: parseInt(params.id) },
@@ -62,8 +76,9 @@ const updateIssueHandler: AuthenticatedHandler = async (
 	const updatedIssue = await prisma.issue.update({
 		where: { id: parseInt(params.id) },
 		data: {
-			title: body.title,
-			description: body.description,
+			title,
+			description,
+			assignedUserId,
 		},
 	});
 
