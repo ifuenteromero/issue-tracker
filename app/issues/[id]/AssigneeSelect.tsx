@@ -8,18 +8,7 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
 const AssigneeSelect = ({ issue }: { issue: Issue }) => {
-	const {
-		data: users,
-		isLoading,
-		error,
-	} = useQuery<User[]>({
-		queryKey: ['users'],
-		queryFn: () =>
-			axios.get<User[]>(endpoints.users).then((res) => res.data),
-		staleTime: 60 * 1000, // 60s
-		refetchOnWindowFocus: false,
-		retry: 3,
-	});
+	const { data: users, isLoading, error } = useUsers();
 
 	if (error) return null;
 	if (isLoading) return <Skeleton height='2rem' />;
@@ -65,5 +54,15 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
 		</>
 	);
 };
+
+const useUsers = () =>
+	useQuery<User[]>({
+		queryKey: ['users'],
+		queryFn: () =>
+			axios.get<User[]>(endpoints.users).then((res) => res.data),
+		staleTime: 60 * 1000, // 60s
+		refetchOnWindowFocus: false,
+		retry: 3,
+	});
 
 export default AssigneeSelect;
