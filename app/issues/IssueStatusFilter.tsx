@@ -32,10 +32,7 @@ const IssueStatusFilter = () => {
 	};
 
 	return (
-		<Select.Root
-			onValueChange={onChangeStatus}
-			defaultValue={defaultValue!}
-		>
+		<Select.Root onValueChange={onChangeStatus} value={defaultValue!}>
 			<Select.Trigger
 				className='!cursor-pointer'
 				placeholder='Filter by status'
