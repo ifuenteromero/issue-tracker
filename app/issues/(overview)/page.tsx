@@ -1,47 +1,14 @@
-import { IssueStatusBadge, Link } from '@/app/components';
 import Pagination from '@/app/components/Pagination';
-import routes from '@/app/utils/routes';
 import { auth } from '@/auth';
 import { prisma } from '@/prisma/client';
-import { Issue, Status } from '@prisma/client';
-import { Table } from '@radix-ui/themes';
-import NextLink from 'next/link';
-import { FaArrowUp } from 'react-icons/fa6';
-import IssueActions from '../IssueActions';
+import { Status } from '@prisma/client';
 
-type direction = 'asc' | 'desc';
+import IssueActions from '../IssueActions';
+import IssueTable, { columnNames, IssueQuery } from '../_components/IssueTable';
 
 interface Props {
-	searchParams: {
-		status: Status;
-		orderBy: keyof Issue;
-		sortDirection: direction;
-		page: string;
-	};
+	searchParams: IssueQuery;
 }
-
-const columns: {
-	label: string;
-	className?: string;
-	value: keyof Issue;
-	sortDirection?: direction;
-}[] = [
-	{
-		label: 'Issue',
-		value: 'title',
-	},
-	{
-		label: 'State',
-		value: 'status',
-		className: 'hidden md:table-cell',
-	},
-	{
-		label: 'Created',
-		value: 'createdAt',
-		className: 'hidden md:table-cell',
-		sortDirection: 'desc',
-	},
-];
 
 const IssuesPage = async ({ searchParams }: Props) => {
 	const statuses = Object.values(Status);
@@ -49,9 +16,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
 		? searchParams.status
 		: undefined;
 
-	const orderBy = columns.some(
-		(column) => column.value === searchParams.orderBy
-	)
+	const orderBy = columnNames.includes(searchParams.orderBy)
 		? { [searchParams.orderBy]: searchParams.sortDirection }
 		: undefined;
 
@@ -69,81 +34,10 @@ const IssuesPage = async ({ searchParams }: Props) => {
 
 	const session = await auth();
 
-	const toggleDirection = (dir: direction) =>
-		dir === 'asc' ? 'desc' : 'asc';
-
 	return (
 		<div className='space-y-5'>
 			{session?.user && <IssueActions />}
-			<Table.Root variant='surface'>
-				<Table.Header>
-					<Table.Row>
-						{columns.map((column) => {
-							const isSorted =
-								column.value === searchParams.orderBy;
-							const sortDirection = isSorted
-								? toggleDirection(searchParams.sortDirection)
-								: column.sortDirection || 'asc';
-							return (
-								<Table.ColumnHeaderCell
-									className={column.className}
-									key={column.label}
-								>
-									<NextLink
-										href={{
-											query: {
-												...searchParams,
-												orderBy: column.value,
-												sortDirection,
-											},
-										}}
-										className='w-full inline-flex items-center'
-									>
-										{column.label}
-										{isSorted && (
-											<FaArrowUp
-												className={`inline ml-1 transition-transform duration-200 ease-out ${
-													sortDirection === 'asc'
-														? 'transform rotate-180'
-														: 'transform rotate-0'
-												}`}
-											/>
-										)}
-									</NextLink>
-								</Table.ColumnHeaderCell>
-							);
-						})}
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{issues.map((issue) => {
-						return (
-							<Table.Row key={issue.id}>
-								<Table.Cell>
-									<Link
-										href={routes.issueDetail(
-											issue.id.toString()
-										)}
-									>
-										{issue.title}
-									</Link>
-									<div className='block md:hidden'>
-										<IssueStatusBadge
-											status={issue.status}
-										/>
-									</div>
-								</Table.Cell>
-								<Table.Cell className='hidden md:table-cell'>
-									<IssueStatusBadge status={issue.status} />
-								</Table.Cell>
-								<Table.Cell className='hidden md:table-cell'>
-									{issue.createdAt.toDateString()}
-								</Table.Cell>
-							</Table.Row>
-						);
-					})}
-				</Table.Body>
-			</Table.Root>
+			<IssueTable searchParams={searchParams} issues={issues} />
 			<Pagination
 				itemsCount={itemsCount}
 				currentPage={page}
