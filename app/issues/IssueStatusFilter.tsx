@@ -19,6 +19,10 @@ const IssueStatusFilter = () => {
 	const status = searchParams.get('status');
 	const pathname = usePathname();
 
+	const defaultValue = statuses.find((st) => st.value === status)
+		? status
+		: defaultOption;
+
 	const onChangeStatus = (statusValue: Status | 'All') => {
 		const params = new URLSearchParams(searchParams);
 		statusValue === defaultOption
@@ -30,7 +34,7 @@ const IssueStatusFilter = () => {
 	return (
 		<Select.Root
 			onValueChange={onChangeStatus}
-			defaultValue={status || defaultOption}
+			defaultValue={defaultValue!}
 		>
 			<Select.Trigger
 				className='!cursor-pointer'
