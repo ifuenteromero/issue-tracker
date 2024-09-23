@@ -1,4 +1,5 @@
 import { IssueStatusBadge, Link } from '@/app/components';
+import Pagination from '@/app/components/Pagination';
 import routes from '@/app/utils/routes';
 import { auth } from '@/auth';
 import { prisma } from '@/prisma/client';
@@ -15,6 +16,7 @@ interface Props {
 		status: Status;
 		orderBy: keyof Issue;
 		sortDirection: direction;
+		page: string;
 	};
 }
 
@@ -52,10 +54,18 @@ const IssuesPage = async ({ searchParams }: Props) => {
 	)
 		? { [searchParams.orderBy]: searchParams.sortDirection }
 		: undefined;
+
+	const page = parseInt(searchParams.page) || 1;
+	const pageSize = 10;
+	const where = { status };
 	const issues = await prisma.issue.findMany({
-		where: { status },
+		where,
 		orderBy,
+		take: pageSize,
+		skip: (page - 1) * pageSize,
 	});
+
+	const itemsCount = await prisma.issue.count({ where });
 
 	const session = await auth();
 
@@ -134,6 +144,11 @@ const IssuesPage = async ({ searchParams }: Props) => {
 					})}
 				</Table.Body>
 			</Table.Root>
+			<Pagination
+				itemsCount={itemsCount}
+				currentPage={page}
+				pageSize={pageSize}
+			/>
 		</div>
 	);
 };
