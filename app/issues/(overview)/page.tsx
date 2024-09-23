@@ -57,7 +57,10 @@ const IssuesPage = async ({ searchParams }: Props) => {
 				<Table.Header>
 					<Table.Row>
 						{columns.map((column) => (
-							<Table.ColumnHeaderCell key={column.label}>
+							<Table.ColumnHeaderCell
+								className={column.className}
+								key={column.label}
+							>
 								<NextLink
 									href={{
 										query: {
