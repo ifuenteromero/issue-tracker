@@ -8,14 +8,22 @@ import NextLink from 'next/link';
 import { FaArrowUp } from 'react-icons/fa6';
 import IssueActions from '../IssueActions';
 
+type direction = 'asc' | 'desc';
+
 interface Props {
 	searchParams: {
 		status: Status;
 		orderBy: keyof Issue;
+		sortDirection: direction;
 	};
 }
 
-const columns: { label: string; className?: string; value: keyof Issue }[] = [
+const columns: {
+	label: string;
+	className?: string;
+	value: keyof Issue;
+	sortDirection?: direction;
+}[] = [
 	{
 		label: 'Issue',
 		value: 'title',
@@ -29,6 +37,7 @@ const columns: { label: string; className?: string; value: keyof Issue }[] = [
 		label: 'Created',
 		value: 'createdAt',
 		className: 'hidden md:table-cell',
+		sortDirection: 'desc',
 	},
 ];
 
@@ -41,7 +50,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
 	const orderBy = columns.some(
 		(column) => column.value === searchParams.orderBy
 	)
-		? { [searchParams.orderBy]: 'asc' }
+		? { [searchParams.orderBy]: searchParams.sortDirection }
 		: undefined;
 	const issues = await prisma.issue.findMany({
 		where: { status },
@@ -50,33 +59,50 @@ const IssuesPage = async ({ searchParams }: Props) => {
 
 	const session = await auth();
 
+	const toggleDirection = (dir: direction) =>
+		dir === 'asc' ? 'desc' : 'asc';
+
 	return (
 		<div className='space-y-5'>
 			{session?.user && <IssueActions />}
 			<Table.Root variant='surface'>
 				<Table.Header>
 					<Table.Row>
-						{columns.map((column) => (
-							<Table.ColumnHeaderCell
-								className={column.className}
-								key={column.label}
-							>
-								<NextLink
-									href={{
-										query: {
-											...searchParams,
-											orderBy: column.value,
-										},
-									}}
-									className='w-full inline-flex items-center'
+						{columns.map((column) => {
+							const isSorted =
+								column.value === searchParams.orderBy;
+							const sortDirection = isSorted
+								? toggleDirection(searchParams.sortDirection)
+								: column.sortDirection || 'asc';
+							return (
+								<Table.ColumnHeaderCell
+									className={column.className}
+									key={column.label}
 								>
-									{column.label}
-									{column.value === searchParams.orderBy && (
-										<FaArrowUp className='inline ml-1' />
-									)}
-								</NextLink>
-							</Table.ColumnHeaderCell>
-						))}
+									<NextLink
+										href={{
+											query: {
+												...searchParams,
+												orderBy: column.value,
+												sortDirection,
+											},
+										}}
+										className='w-full inline-flex items-center'
+									>
+										{column.label}
+										{isSorted && (
+											<FaArrowUp
+												className={`inline ml-1 transition-transform duration-200 ease-out ${
+													sortDirection === 'asc'
+														? 'transform rotate-180'
+														: 'transform rotate-0'
+												}`}
+											/>
+										)}
+									</NextLink>
+								</Table.ColumnHeaderCell>
+							);
+						})}
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
