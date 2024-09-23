@@ -15,31 +15,40 @@ interface Props {
 	};
 }
 
+const columns: { label: string; className?: string; value: keyof Issue }[] = [
+	{
+		label: 'Issue',
+		value: 'title',
+	},
+	{
+		label: 'State',
+		value: 'status',
+		className: 'hidden md:table-cell',
+	},
+	{
+		label: 'Created',
+		value: 'createdAt',
+		className: 'hidden md:table-cell',
+	},
+];
+
 const IssuesPage = async ({ searchParams }: Props) => {
 	const statuses = Object.values(Status);
 	const status = statuses.includes(searchParams.status)
 		? searchParams.status
 		: undefined;
-	const issues = await prisma.issue.findMany({ where: { status } });
-	const session = await auth();
 
-	const columns: { label: string; className?: string; value: keyof Issue }[] =
-		[
-			{
-				label: 'Issue',
-				value: 'title',
-			},
-			{
-				label: 'State',
-				value: 'status',
-				className: 'hidden md:table-cell',
-			},
-			{
-				label: 'Created',
-				value: 'createdAt',
-				className: 'hidden md:table-cell',
-			},
-		];
+	const orderBy = columns.some(
+		(column) => column.value === searchParams.orderBy
+	)
+		? { [searchParams.orderBy]: 'asc' }
+		: undefined;
+	const issues = await prisma.issue.findMany({
+		where: { status },
+		orderBy,
+	});
+
+	const session = await auth();
 
 	return (
 		<div className='space-y-5'>
