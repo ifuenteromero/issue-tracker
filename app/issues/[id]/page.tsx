@@ -7,7 +7,11 @@ import DeleteIssueButton from './DeleteIssueButton';
 import EditIssueButton from './EditIssueButton';
 import IssueDetails from './IssueDetails';
 
-const IssueDetailPage = async ({ params }: { params: { id: string } }) => {
+interface Props {
+	params: { id: string };
+}
+
+const IssueDetailPage = async ({ params }: Props) => {
 	const issueId = parseInt(params.id);
 	if (typeof issueId !== 'number' || isNaN(issueId)) notFound();
 
@@ -33,6 +37,16 @@ const IssueDetailPage = async ({ params }: { params: { id: string } }) => {
 			)}
 		</Grid>
 	);
+};
+
+export const generateMetadata = async ({ params }: Props) => {
+	const issue = await prisma.issue.findUnique({
+		where: { id: parseInt(params.id) },
+	});
+	return {
+		title: issue?.title,
+		description: 'Details of issue ' + issue?.id,
+	};
 };
 
 export default IssueDetailPage;
