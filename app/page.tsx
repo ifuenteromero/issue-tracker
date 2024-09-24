@@ -1,5 +1,6 @@
 import { prisma } from '@/prisma/client';
-import { Flex } from '@radix-ui/themes';
+import { Flex, Grid } from '@radix-ui/themes';
+import IssueChart from './issues/_components/IssueChart';
 import IssueSummary from './issues/_components/IssueSummary';
 import LatestIssues from './issues/_components/LatestIssues';
 
@@ -10,11 +11,20 @@ const Home = async () => {
 		where: { status: 'IN_PROGRESS' },
 	});
 
+	const issueSummary = {
+		open,
+		closed,
+		inProgress,
+	};
+
 	return (
-		<Flex direction='column' gap='4'>
-			<IssueSummary open={open} closed={closed} inProgress={inProgress} />
+		<Grid gap='5' columns={{ initial: '1', md: '2' }}>
+			<Flex direction='column' gap='5'>
+				<IssueSummary {...issueSummary} />
+				<IssueChart {...issueSummary} />
+			</Flex>
 			<LatestIssues />
-		</Flex>
+		</Grid>
 	);
 };
 
