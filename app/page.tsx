@@ -1,5 +1,7 @@
+import LatestIssues from './issues/_components/LatestIssues';
+
 const Home = () => {
-	return <div>Issue Tracker</div>;
+	return <LatestIssues />;
 };
 
 export default Home;
