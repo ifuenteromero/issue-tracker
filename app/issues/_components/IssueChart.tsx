@@ -1,12 +1,13 @@
 'use client';
 
+import { Card } from '@radix-ui/themes';
 import {
 	Bar,
 	BarChart,
 	CartesianGrid,
 	Legend,
 	ResponsiveContainer,
-	Tooltip,
+	XAxis,
 	YAxis,
 } from 'recharts';
 
@@ -19,29 +20,36 @@ interface Props {
 const IssueChart = ({ closed, inProgress, open }: Props) => {
 	const data = [
 		{
-			inProgress,
-			open,
-			closed,
+			'In Progress': inProgress,
+			Open: open,
+			Closed: closed,
 		},
 	];
 	return (
-		<ResponsiveContainer width='100%' height='100%'>
-			<BarChart
-				data={data}
-				margin={{
-					right: 0,
-					left: 0,
-				}}
-			>
-				<CartesianGrid strokeDasharray='6 6' />
-				<YAxis />
-				<Tooltip />
-				<Legend />
-				<Bar dataKey='open' barSize={60} fill='#c40006d3' />
-				<Bar barSize={60} dataKey='inProgress' fill='#1f0099af' />
-				<Bar barSize={60} dataKey='closed' fill='#00713fde' />
-			</BarChart>
-		</ResponsiveContainer>
+		<Card className='!pt-10 !pb-5 !pr-10'>
+			<ResponsiveContainer width='100%' height={300}>
+				<BarChart
+					data={data}
+					margin={{
+						right: 0,
+						left: 0,
+					}}
+					barGap={20}
+				>
+					<CartesianGrid strokeDasharray='6 6' />
+					<YAxis />
+					<XAxis tickFormatter={(tick) => (tick === 0 ? '' : tick)} />
+					<Legend
+						wrapperStyle={{
+							marginLeft: '2.5rem',
+						}}
+					/>
+					<Bar dataKey='Open' barSize={40} fill='#c40006d3' />
+					<Bar barSize={40} dataKey='In Progress' fill='#1f0099af' />
+					<Bar barSize={40} dataKey='Closed' fill='#00713fde' />
+				</BarChart>
+			</ResponsiveContainer>
+		</Card>
 	);
 };
 
