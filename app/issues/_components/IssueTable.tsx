@@ -43,6 +43,7 @@ const IssueTable = ({ searchParams, issues }: Props) => {
 											...searchParams,
 											orderBy: column.value,
 											sortDirection,
+											page: '1',
 										},
 									}}
 									className='w-full inline-flex items-center'
