@@ -1,58 +1,48 @@
-import { IssueStatusBadge, Link } from '@/app/components';
-import routes from '@/app/utils/routes';
+import Pagination from '@/app/components/Pagination';
 import { auth } from '@/auth';
 import { prisma } from '@/prisma/client';
-import { Table } from '@radix-ui/themes';
-import IssueActions from '../IssueActions';
+import { Status } from '@prisma/client';
 
-const IssuesPage = async () => {
-	const issues = await prisma.issue.findMany();
+import IssueActions from '../IssueActions';
+import IssueTable, { columnNames, IssueQuery } from '../_components/IssueTable';
+
+interface Props {
+	searchParams: IssueQuery;
+}
+
+const IssuesPage = async ({ searchParams }: Props) => {
+	const statuses = Object.values(Status);
+	const status = statuses.includes(searchParams.status)
+		? searchParams.status
+		: undefined;
+
+	const orderBy = columnNames.includes(searchParams.orderBy)
+		? { [searchParams.orderBy]: searchParams.sortDirection }
+		: undefined;
+
+	const page = parseInt(searchParams.page) || 1;
+	const pageSize = 10;
+	const where = { status };
+	const issues = await prisma.issue.findMany({
+		where,
+		orderBy,
+		take: pageSize,
+		skip: (page - 1) * pageSize,
+	});
+
+	const itemsCount = await prisma.issue.count({ where });
+
 	const session = await auth();
 
 	return (
 		<div className='space-y-5'>
 			{session?.user && <IssueActions />}
-			<Table.Root variant='surface'>
-				<Table.Header>
-					<Table.Row>
-						<Table.ColumnHeaderCell>Issue</Table.ColumnHeaderCell>
-						<Table.ColumnHeaderCell className='hidden md:table-cell'>
-							State
-						</Table.ColumnHeaderCell>
-						<Table.ColumnHeaderCell className='hidden md:table-cell'>
-							Created
-						</Table.ColumnHeaderCell>
-					</Table.Row>
-				</Table.Header>
-				<Table.Body>
-					{issues.map((issue) => {
-						return (
-							<Table.Row key={issue.id}>
-								<Table.Cell>
-									<Link
-										href={routes.issueDetail(
-											issue.id.toString()
-										)}
-									>
-										{issue.title}
-									</Link>
-									<div className='block md:hidden'>
-										<IssueStatusBadge
-											status={issue.status}
-										/>
-									</div>
-								</Table.Cell>
-								<Table.Cell className='hidden md:table-cell'>
-									<IssueStatusBadge status={issue.status} />
-								</Table.Cell>
-								<Table.Cell className='hidden md:table-cell'>
-									{issue.createdAt.toDateString()}
-								</Table.Cell>
-							</Table.Row>
-						);
-					})}
-				</Table.Body>
-			</Table.Root>
+			<IssueTable searchParams={searchParams} issues={issues} />
+			<Pagination
+				itemsCount={itemsCount}
+				currentPage={page}
+				pageSize={pageSize}
+			/>
 		</div>
 	);
 };
