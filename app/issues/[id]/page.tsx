@@ -1,4 +1,5 @@
-import prisma from '@/prisma/client';
+import { auth } from '@/auth';
+import { prisma } from '@/prisma/client';
 import { Flex, Grid } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
 import DeleteIssueButton from './DeleteIssueButton';
@@ -14,15 +15,20 @@ const IssueDetailPage = async ({ params }: { params: { id: string } }) => {
 	});
 
 	if (!issue) notFound();
+
+	const session = await auth();
+
 	return (
 		<Grid columns={{ initial: '1', sm: '5' }} gap='5'>
 			<Flex direction='column' gap='2' className='md:col-span-4 '>
 				<IssueDetails issue={issue} />
 			</Flex>
-			<Flex direction='column' gap='4'>
-				<EditIssueButton issueId={params.id} />
-				<DeleteIssueButton issueId={parseInt(params.id)} />
-			</Flex>
+			{session?.user && (
+				<Flex direction='column' gap='4'>
+					<EditIssueButton issueId={params.id} />
+					<DeleteIssueButton issueId={parseInt(params.id)} />
+				</Flex>
+			)}
 		</Grid>
 	);
 };
