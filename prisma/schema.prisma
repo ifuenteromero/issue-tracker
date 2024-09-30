@@ -26,9 +26,9 @@ model Issue {
 }
 
 enum Status {
-  OPEN
-  IN_PROGRESS
   CLOSED
+  IN_PROGRESS
+  OPEN
 }
 
 // npx prisma format
