@@ -3,7 +3,7 @@ import prisma from '@/prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
-export type IssueForm = z.infer<typeof createIssueSchema>;
+export type IssueFormData = z.infer<typeof createIssueSchema>;
 
 export const POST = async (request: NextRequest) => {
 	const body = await request.json();

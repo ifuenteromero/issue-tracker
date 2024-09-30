@@ -6,3 +6,6 @@ export const createIssueSchema = z.object({
 		.string({ message: 'Description is required.' })
 		.min(1, 'Description is required.'),
 });
+
+// Esquema derivado para actualizar un issue (propiedades opcionales)
+export const updateIssueSchema = createIssueSchema.partial();

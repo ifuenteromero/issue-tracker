@@ -1,0 +1,68 @@
+3 cache layers
+
+DATA CACHE: 
+-   When we fetch data from external data sources using fetch API.
+    Next js stores the result in the data cache, so next time we ask for the same piece of data
+    Next.js is not going to go over the network, it will return the data from its data cache
+-   Stored in the file system and is permanent until we redeploy our aplication. 
+    you can disable this behaviour 
+        fetch('...', { cache: 'no-store' })
+        fetch('...', { revalidate: 3600 })
+
+FULL ROUTE CACHE (Cache on the Server)
+-   Used to store the output of statically rendered routes
+    We have Static (at build time)  and Dynamic Rendering (at request time)
+    routes without parameters /issues ar considered static routes by default
+    
+    npm run build
+    Lambda λ dinamic ƒ 
+    Circle ◯ static
+
+    ○ /issues static     
+    ƒ /issues/[id] dinamic  
+
+    npm start (prev npm run build)
+    crear un issue no vemos el issue creado aunque refresques la página
+    en dev sí se ve
+
+    For disabling caching
+    https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
+
+    en la página /issues
+    export const dynamic = 'force-dynamic';
+    npm run build (APARECE COMO DINÁMICA ƒ)
+    npm start
+    Al crear el issue sí podemos verlo en la lista de issues, aunque hay que refrescar
+    pero es por otra caché (la 3 la del cliente)
+
+    Tambíen se puede poner un revalidate
+    al hacer npm run build la pone estática ○ /issues   
+    export const revalidate = 30; 
+    a los 30 segundos vuelve a hacer la petición de issues
+    si pones export const revalidate = 0; es equivalente a ser DINÁMICA 
+    
+3   CLIENT SIDE CACHE (ROUTER CACHE)
+    To store the payload of pages in browser
+    So to give the user a very fast experience, Next js router automatically stores the output of pages as the user
+    navigates in the application, the next time the user come bach to the page the have visited before, 
+    Next js is not going to make a request to the backend, it will return the result from the client cache
+    Now this client cahce lasts for a session, but gets refreshed every time we reload.
+
+    The pages that are stored in the client cache get automatic invalidation depending on how they are rendered.
+    That period is 5 minutes for statically rendered routes like our dashboard
+    /dashboard es estática así que va a estar 5 minutos cacheada por el cliente. Si vuelves a esa página después de 
+    5 minutos Next js hará una petición al backend par refrescar el contenido
+
+    For dynamic routes, like out issues page (after export const dynamic force-dinamic)
+    the invalidation period is 30 seconds 
+    esto significa:
+    Si refrescas la página de issues y rápidamente creas otro, como va a volver a la página no lo verás (sin hacer reload)
+    si te vas y vuelves a los 30s refrescará 
+
+    router refresh para en issues refrescar los datos al crear un issue
+
+
+
+
+
+
