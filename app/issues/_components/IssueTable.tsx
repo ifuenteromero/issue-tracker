@@ -108,6 +108,7 @@ const columns: {
 		label: 'State',
 		value: 'status',
 		className: 'hidden md:table-cell',
+		sortDirection: 'desc',
 	},
 	{
 		label: 'Created',
