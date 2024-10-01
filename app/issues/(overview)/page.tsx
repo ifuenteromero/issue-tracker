@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/prisma/client';
 import { Status } from '@prisma/client';
 
+import { Metadata } from 'next';
 import IssueActions from '../IssueActions';
 import IssueTable, { columnNames, IssueQuery } from '../_components/IssueTable';
 
@@ -49,5 +50,10 @@ const IssuesPage = async ({ searchParams }: Props) => {
 
 export const dynamic = 'force-dynamic';
 // export const revalidate = 30;
+
+export const metadata: Metadata = {
+	title: 'Issue Tracker - Issue List',
+	description: 'View all project issues',
+};
 
 export default IssuesPage;
