@@ -10,7 +10,8 @@
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"jsx": "preserve",
+		"jsx": "react-jsx", // En archivos con Fragments me estaba reclamando que importara React lo cuál no es necesario
+		// desde React 17
 		"incremental": true,
 		"plugins": [
 			{
