@@ -50,7 +50,7 @@ const updateIssueHandler: AuthenticatedHandler = async (
 			status: 400,
 		});
 	}
-	const { title, description, assignedUserId } = body;
+	const { title, description, assignedUserId, status } = body;
 
 	if (assignedUserId) {
 		const user = await prisma.user.findUnique({
@@ -79,6 +79,7 @@ const updateIssueHandler: AuthenticatedHandler = async (
 			title,
 			description,
 			assignedUserId,
+			status,
 		},
 	});
 

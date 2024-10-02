@@ -1,14 +1,23 @@
-import { statusMap } from '@/app/components/IssueStatusBadge';
-import { Status } from '@prisma/client';
-import { Select } from '@radix-ui/themes';
+'use client';
 
-const StatusSelect = ({ issueStatus }: { issueStatus: Status }) => {
+import endpoints from '@/app/api/endpoints';
+import { statusMap } from '@/app/components/IssueStatusBadge';
+import { Issue, Status } from '@prisma/client';
+import { Select } from '@radix-ui/themes';
+import axios from 'axios';
+
+const StatusSelect = ({ issue }: { issue: Issue }) => {
 	const statuses: { label: string; status: Status }[] = Object.entries(
 		statusMap
 	).map(([status, { label }]) => ({ label, status: status as Status }));
 
+	const changeStatus = async (value: Status) =>
+		await axios.patch(endpoints.issueDetail(issue.id.toString()), {
+			status: value,
+		});
+
 	return (
-		<Select.Root defaultValue={issueStatus}>
+		<Select.Root onValueChange={changeStatus} defaultValue={issue.status}>
 			<Select.Trigger placeholder='Status...' />
 			<Select.Content>
 				<Select.Group>
