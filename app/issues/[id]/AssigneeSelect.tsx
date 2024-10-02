@@ -1,26 +1,44 @@
 'use client';
 
 import endpoints from '@/app/api/endpoints';
-import { Issue, User } from '@prisma/client';
+import { Issue, Status, User } from '@prisma/client';
 import { Select, Skeleton } from '@radix-ui/themes';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 
 const AssigneeSelect = ({ issue }: { issue: Issue }) => {
 	const { data: users, isLoading, error } = useUsers();
+	const router = useRouter();
 
 	if (error) return null;
 	if (isLoading) return <Skeleton height='2rem' />;
 
+	const prevUser = issue.assignedUserId;
+
 	const unassignedOption = 'Unassigned';
 
-	const assignIssue = (userId: string) => {
+	const assignUser = (userId: string) => {
 		const assignedUserId = userId === unassignedOption ? null : userId;
+
+		const status = (() => {
+			// si estaba desasignado y le asigno un usuario, lo pongo en progreso
+			// Si lo tenía otro user y le cambio el user, no hago nada
+			const isUnassigned = prevUser === null;
+			if (isUnassigned && assignedUserId) return Status.IN_PROGRESS;
+			// Si estaba asignado y no estaba closed y lo desasigno, lo pongo en abierto
+			if (prevUser && issue.status !== Status.CLOSED && !assignedUserId)
+				return Status.OPEN;
+		})();
+
 		toast.promise(
-			axios.patch(endpoints.issueDetail(issue.id.toString()), {
-				assignedUserId,
-			}),
+			axios
+				.patch(endpoints.issueDetail(issue.id.toString()), {
+					assignedUserId,
+					status,
+				})
+				.then(() => router.refresh()),
 			{
 				loading: 'Saving...',
 				success: 'Saved!',
@@ -32,8 +50,8 @@ const AssigneeSelect = ({ issue }: { issue: Issue }) => {
 	return (
 		<>
 			<Select.Root
-				onValueChange={assignIssue}
-				defaultValue={issue.assignedUserId || unassignedOption}
+				onValueChange={assignUser}
+				defaultValue={prevUser || unassignedOption}
 			>
 				<Select.Trigger placeholder='Assign...' />
 				<Select.Content>
