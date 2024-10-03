@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -23,12 +23,20 @@ model Issue {
   updatedAt      DateTime @updatedAt
   assignedUserId String?  @db.VarChar(255)
   assignedUser   User?    @relation(fields: [assignedUserId], references: [id])
+  priority       Priority @default(LOW)
 }
 
 enum Status {
   CLOSED
   IN_PROGRESS
   OPEN
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
 
 // npx prisma format
