@@ -5,7 +5,7 @@ import { ErrorMessage, Spinner } from '@/app/components';
 import routes from '@/app/utils/routes';
 import { createIssueSchema } from '@/app/validationSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Issue } from '@prisma/client';
+import { Issue, Priority } from '@prisma/client';
 import { Button, Callout, TextField } from '@radix-ui/themes';
 import axios from 'axios';
 import 'easymde/dist/easymde.min.css';
@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { CiCircleInfo } from 'react-icons/ci';
+import PrioritySelect from './PrioritySelect';
 
 const SimpleMDEEditor = dynamic(() => import('react-simplemde-editor'), {
 	ssr: false,
@@ -82,7 +83,21 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
 					)}
 				/>
 				<ErrorMessage>{errors.description?.message}</ErrorMessage>
-				<Button disabled={isSubmitting}>
+				<Controller
+					name='priority'
+					control={control}
+					defaultValue={issue?.priority}
+					render={({ field }) => (
+						<PrioritySelect
+							onValueChange={(value: Priority) =>
+								field.onChange({ target: { value } })
+							}
+							{...field}
+						/>
+					)}
+				/>
+				<ErrorMessage>{errors.priority?.message}</ErrorMessage>
+				<Button className='!mt-6' disabled={isSubmitting}>
 					{buttonText} {isSubmitting && <Spinner />}
 				</Button>
 			</form>

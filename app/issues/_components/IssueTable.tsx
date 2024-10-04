@@ -125,6 +125,7 @@ const columns: {
 		label: 'Priority',
 		value: 'priority',
 		className: 'hidden md:table-cell',
+		sortDirection: 'desc',
 	},
 ];
 

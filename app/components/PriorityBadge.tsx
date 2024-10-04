@@ -1,7 +1,7 @@
 import { Priority } from '@prisma/client';
 import { Badge } from '@radix-ui/themes';
 
-const priorityMap: Record<
+export const priorityMap: Record<
 	Priority,
 	{ label: string; color: 'red' | 'orange' | 'yellow' | 'green' }
 > = {

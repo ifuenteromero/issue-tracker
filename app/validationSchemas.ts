@@ -1,3 +1,4 @@
+import { Priority } from '@prisma/client';
 import { z } from 'zod';
 
 export const createIssueSchema = z.object({
@@ -11,6 +12,12 @@ export const createIssueSchema = z.object({
 		.max(255)
 		.optional()
 		.nullable(),
+	priority: z.enum(
+		[Priority.LOW, Priority.MEDIUM, Priority.HIGH, Priority.CRITICAL],
+		{
+			message: 'Priority is required.',
+		}
+	),
 });
 
 // Esquema derivado para actualizar un issue (propiedades opcionales)
