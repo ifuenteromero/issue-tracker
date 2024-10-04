@@ -1,4 +1,5 @@
 import { IssueStatusBadge, Link } from '@/app/components';
+import PriorityBadge from '@/app/components/PriorityBadge';
 import routes from '@/app/utils/routes';
 import { Issue, Status } from '@prisma/client';
 import { Table } from '@radix-ui/themes';
@@ -76,8 +77,9 @@ const IssueTable = ({ searchParams, issues }: Props) => {
 								>
 									{issue.title}
 								</Link>
-								<div className='block md:hidden'>
+								<div className='flex gap-2 mt-2 md:hidden'>
 									<IssueStatusBadge status={issue.status} />
+									<PriorityBadge priority={issue.priority} />
 								</div>
 							</Table.Cell>
 							<Table.Cell className='hidden md:table-cell'>
@@ -85,6 +87,9 @@ const IssueTable = ({ searchParams, issues }: Props) => {
 							</Table.Cell>
 							<Table.Cell className='hidden md:table-cell'>
 								{issue.createdAt.toDateString()}
+							</Table.Cell>
+							<Table.Cell className='hidden md:table-cell'>
+								<PriorityBadge priority={issue.priority} />
 							</Table.Cell>
 						</Table.Row>
 					);
@@ -113,6 +118,12 @@ const columns: {
 	{
 		label: 'Created',
 		value: 'createdAt',
+		className: 'hidden md:table-cell',
+		sortDirection: 'desc',
+	},
+	{
+		label: 'Priority',
+		value: 'priority',
 		className: 'hidden md:table-cell',
 		sortDirection: 'desc',
 	},

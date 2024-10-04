@@ -32,8 +32,14 @@ const createIssueHandler = async (request: NextRequest) => {
 			status: 400,
 		});
 
+	const { title, description, priority } = validation.data;
+
 	const newIssue = await prisma.issue.create({
-		data: { title: body.title, description: body.description },
+		data: {
+			title,
+			description,
+			priority,
+		},
 	});
 
 	return NextResponse.json(newIssue, { status: 201 });
