@@ -4,6 +4,7 @@ import { Flex, Grid } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import AssigneeSelect from './AssigneeSelect';
+import CloseEditionButton from './CloseEditionButton';
 import DeleteIssueButton from './DeleteIssueButton';
 import EditIssueButton from './EditIssueButton';
 import IssueDetails from './IssueDetails';
@@ -34,6 +35,7 @@ const IssueDetailPage = async ({ params }: Props) => {
 			</Flex>
 			{session?.user && (
 				<Flex direction='column' gap='4'>
+					<CloseEditionButton />
 					<AssigneeSelect issue={issue} />
 					<StatusSelect issue={issue} />
 					<EditIssueButton issueId={params.id} />

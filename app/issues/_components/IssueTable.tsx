@@ -2,7 +2,7 @@ import { IssueStatusBadge, Link } from '@/app/components';
 import PriorityBadge from '@/app/components/PriorityBadge';
 import routes from '@/app/utils/routes';
 import { Issue, Status } from '@prisma/client';
-import { Table } from '@radix-ui/themes';
+import { Table, Text } from '@radix-ui/themes';
 import NextLink from 'next/link';
 import { FaArrowUp } from 'react-icons/fa6';
 
@@ -67,35 +67,64 @@ const IssueTable = ({ searchParams, issues }: Props) => {
 			</Table.Header>
 			<Table.Body>
 				{issues.map((issue) => {
+					const issueId = issue.id.toString();
 					return (
-						<Table.Row key={issue.id}>
-							<Table.Cell>
-								<Link
-									href={routes.issueDetail(
-										issue.id.toString()
-									)}
-								>
-									{issue.title}
-								</Link>
+						<Table.Row
+							key={issue.id}
+							className='cursor-pointer hover:bg-gray-50'
+						>
+							<Cell issueId={issueId}>
+								<Text>{issue.title}</Text>
 								<div className='flex gap-2 mt-2 md:hidden'>
 									<IssueStatusBadge status={issue.status} />
 									<PriorityBadge priority={issue.priority} />
 								</div>
-							</Table.Cell>
-							<Table.Cell className='hidden md:table-cell'>
+							</Cell>
+							<Cell
+								issueId={issueId}
+								className='hidden md:table-cell'
+							>
 								<IssueStatusBadge status={issue.status} />
-							</Table.Cell>
-							<Table.Cell className='hidden md:table-cell'>
+							</Cell>
+							<Cell
+								issueId={issueId}
+								className='hidden md:table-cell'
+							>
 								{issue.createdAt.toDateString()}
-							</Table.Cell>
-							<Table.Cell className='hidden md:table-cell'>
+							</Cell>
+							<Cell
+								issueId={issueId}
+								className='hidden md:table-cell '
+							>
 								<PriorityBadge priority={issue.priority} />
-							</Table.Cell>
+							</Cell>
 						</Table.Row>
 					);
 				})}
 			</Table.Body>
 		</Table.Root>
+	);
+};
+
+interface CellProps extends Table.CellProps {
+	issueId: string;
+}
+
+const Cell = ({ issueId, children, ...props }: CellProps) => {
+	return (
+		<Table.Cell style={{ padding: '0' }} {...props}>
+			<Link
+				radixLinkProps={{
+					style: { color: 'unset' },
+					className:
+						'!p-3 !flex !flex-col md:!flex-row md:!justify-start hover:!no-underline',
+				}}
+				href={routes.issueDetail(issueId)}
+				newTab={false}
+			>
+				{children}
+			</Link>
+		</Table.Cell>
 	);
 };
 
