@@ -1,5 +1,6 @@
 'use client';
 
+import routes from '@/app/utils/routes';
 import { Button } from '@radix-ui/themes';
 import { useRouter } from 'next/navigation';
 import { IoMdClose } from 'react-icons/io';
@@ -7,7 +8,9 @@ import { IoMdClose } from 'react-icons/io';
 const CloseEditionButton = () => {
 	const router = useRouter();
 	const closeEdition = () => {
-		router.back();
+		const length = window.history.length;
+		if (length <= 2) router.push(routes.issues);
+		else router.back();
 	};
 
 	return (
